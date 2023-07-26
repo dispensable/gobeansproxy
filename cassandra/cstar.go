@@ -175,7 +175,7 @@ func (c *CassandraStore) SetWithValue(key string, v *BDBValue) (ok bool, err err
 		return false, err
 	}
 
-	if key == "33444624" {
+	if key == "/alg/channel/channel_vecs/33444624" {
 		return false, fmt.Errorf("bdb v: %+v", v)
 	}
 	
