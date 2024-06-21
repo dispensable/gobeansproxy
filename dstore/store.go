@@ -269,6 +269,9 @@ func (c *StorageClient) getMulti(keys []string) (rs map[string]*mc.Item, targets
 }
 
 func (c *StorageClient) GetMulti(keys []string) (rs map[string]*mc.Item, err error) {
+	// The keys args MUST BE DEDUPLICATED, if not, there will be MEMORY LEAK
+	keys = deduplicateKeys(keys)
+
 	timer := prometheus.NewTimer(
 		cmdE2EDurationSeconds.WithLabelValues("getm"),
 	)
@@ -276,7 +279,7 @@ func (c *StorageClient) GetMulti(keys []string) (rs map[string]*mc.Item, err err
 
 	bkeys, ckeys := c.pswitcher.ReadEnableOnKeys(keys)
 	rs = make(map[string]*mc.Item, len(keys))
-	
+
 	if len(bkeys) > 0 {
 		totalReqs.WithLabelValues("getm", "beansdb").Inc()
 		c.sched = GetScheduler()
